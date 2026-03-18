@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  /* === Custom tokens (Figma injects --figma-color-* automatically via themeColors) === */
+  :root {
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+    --transition: 150ms ease;
+  }
+
+  /* === Reset & Base === */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 11px;
+    color: var(--figma-color-text);
+    background: var(--figma-color-bg);
+    line-height: 1.4;
+    overflow: hidden;
+  }
+
+  /* === Layout === */
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* === Header === */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--figma-color-border);
+    background: var(--figma-color-bg);
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--figma-color-text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .header-title svg {
+    width: 16px;
+    height: 16px;
+    color: var(--figma-color-text-brand);
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* === Buttons === */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: var(--figma-color-bg-brand);
+    color: var(--figma-color-text-onbrand);
+  }
+  .btn-primary:hover { background: var(--figma-color-bg-brand-hover); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--figma-color-text);
+    border: 1px solid var(--figma-color-border);
+  }
+  .btn-secondary:hover { background: var(--figma-color-bg-hover); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--figma-color-text-secondary);
+    padding: 4px 8px;
+  }
+  .btn-ghost:hover { color: var(--figma-color-text); background: var(--figma-color-bg-hover); }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--figma-color-text-danger);
+    border: 1px solid var(--figma-color-text-danger);
+  }
+  .btn-danger:hover { background: var(--figma-color-bg-danger); color: white; }
+
+  .btn-sm { padding: 3px 8px; font-size: 10px; }
+
+  .btn svg { width: 12px; height: 12px; }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* === Inputs === */
+  .input, .select {
+    padding: 5px 8px;
+    border: 1px solid var(--figma-color-border);
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-family: inherit;
+    color: var(--figma-color-text);
+    background: var(--figma-color-bg);
+    outline: none;
+    transition: border-color var(--transition);
+  }
+  .input:focus, .select:focus {
+    border-color: var(--figma-color-bg-brand);
+  }
+  .input::placeholder { color: var(--figma-color-text-secondary); }
+
+  .select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 6px center;
+    padding-right: 22px;
+    cursor: pointer;
+  }
+
+  /* === Tabs === */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--figma-color-border);
+    padding: 0 16px;
+    flex-shrink: 0;
+  }
+  .tab {
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--figma-color-text-secondary);
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition);
+    font-family: inherit;
+  }
+  .tab:hover { color: var(--figma-color-text); }
+  .tab.active {
+    color: var(--figma-color-text-brand);
+    border-bottom-color: var(--figma-color-bg-brand);
+  }
+
+  /* === Filter Bar === */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--figma-color-border);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 140px;
+    position: relative;
+  }
+  .search-box svg {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    color: var(--figma-color-icon-secondary);
+    pointer-events: none;
+  }
+  .search-box .input {
+    width: 100%;
+    padding-left: 26px;
+  }
+
+  .filter-bar .select {
+    min-width: 100px;
+  }
+  .quantity-select {
+    min-width: 50px !important;
+    width: 58px;
+  }
+
+  /* === Bulk Actions === */
+  .bulk-bar {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: var(--figma-color-bg-selected);
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .bulk-bar.visible { display: flex; }
+  .bulk-bar .count { font-weight: 600; color: var(--figma-color-text-brand); }
+
+  /* === List === */
+  .list-header {
+    display: flex;
+    align-items: center;
+    padding: 6px 16px;
+    border-bottom: 1px solid var(--figma-color-border);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--figma-color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .list-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .list-container::-webkit-scrollbar { width: 6px; }
+  .list-container::-webkit-scrollbar-track { background: transparent; }
+  .list-container::-webkit-scrollbar-thumb { background: var(--figma-color-bg-tertiary); border-radius: 3px; }
+
+  /* === QR Item === */
+  .qr-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--figma-color-border);
+    transition: background var(--transition);
+    gap: 10px;
+  }
+  .qr-item:hover { background: var(--figma-color-bg-hover); }
+
+  .qr-item .checkbox {
+    flex-shrink: 0;
+  }
+
+  .qr-preview {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--figma-color-border);
+    background: white;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .qr-preview {
+    position: relative;
+  }
+  .qr-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Inactive row */
+  .qr-item.qr-inactive {
+    opacity: 0.6;
+  }
+  .qr-item.qr-inactive:hover {
+    opacity: 0.8;
+  }
+
+  .qr-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .qr-name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .qr-category {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--figma-color-text-brand);
+  }
+
+  .qr-name-input {
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 11px;
+    font-family: inherit;
+    color: var(--figma-color-text);
+    padding: 1px 4px;
+    border-radius: var(--radius-sm);
+    width: 120px;
+    outline: none;
+  }
+  .qr-name-input:hover { border-color: var(--figma-color-border); }
+  .qr-name-input:focus { border-color: var(--figma-color-bg-brand); background: var(--figma-color-bg); }
+
+  .qr-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--figma-color-text-secondary);
+  }
+
+  .qr-meta a {
+    color: var(--figma-color-text-brand);
+    text-decoration: none;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .qr-folder {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 100px;
+    font-size: 10px;
+    color: var(--figma-color-text-secondary);
+  }
+  .qr-folder svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+  .qr-date {
+    min-width: 90px;
+    font-size: 10px;
+    color: var(--figma-color-text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .qr-scans {
+    min-width: 50px;
+    text-align: center;
+  }
+  .qr-scans-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--figma-color-text-brand);
+  }
+  .qr-scans-count {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--figma-color-text-success);
+    background: rgba(20, 174, 92, 0.08);
+    border-radius: var(--radius-md);
+    padding: 2px 8px;
+    display: inline-block;
+  }
+
+  .qr-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  /* === Checkbox === */
+  .checkbox {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--figma-color-border);
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+    flex-shrink: 0;
+    background: var(--figma-color-bg);
+  }
+  .checkbox:hover { border-color: var(--figma-color-bg-brand); }
+  .checkbox.checked {
+    background: var(--figma-color-bg-brand);
+    border-color: var(--figma-color-bg-brand);
+  }
+  .checkbox.checked::after {
+    content: '';
+    width: 8px;
+    height: 5px;
+    border-left: 1.5px solid white;
+    border-bottom: 1.5px solid white;
+    transform: rotate(-45deg) translateY(-1px);
+  }
+
+  /* === Empty State === */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 8px;
+    color: var(--figma-color-text-secondary);
+    padding: 40px;
+  }
+  .empty-state svg {
+    width: 48px;
+    height: 48px;
+    color: var(--figma-color-bg-tertiary);
+    margin-bottom: 4px;
+  }
+  .empty-state h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--figma-color-text);
+  }
+  .empty-state p { font-size: 11px; text-align: center; max-width: 240px; }
+
+  /* === Views === */
+  .view { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+  .view.active { display: flex; }
+
+  /* === Create View === */
+  .create-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .create-form {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .create-preview {
+    width: 260px;
+    border-left: 1px solid var(--figma-color-border);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    overflow-y: auto;
+  }
+
+  .preview-qr {
+    width: 200px;
+    height: 200px;
+    border: 1px solid var(--figma-color-border);
+    border-radius: var(--radius-lg);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .preview-qr img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .preview-qr .placeholder {
+    color: var(--figma-color-text-secondary);
+    font-size: 11px;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .preview-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+  }
+  .preview-actions .btn { width: 100%; justify-content: center; }
+
+  /* === Form Groups === */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .form-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--figma-color-text);
+  }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+  }
+  .form-row .form-group { flex: 1; }
+
+  .form-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--figma-color-text-secondary);
+    padding-top: 6px;
+    border-top: 1px solid var(--figma-color-border);
+  }
+
+  .source-toggle {
+    display: flex;
+    border: 1px solid var(--figma-color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .source-toggle button {
+    flex: 1;
+    padding: 6px 12px;
+    border: none;
+    background: transparent;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--figma-color-text-secondary);
+    transition: all var(--transition);
+  }
+  .source-toggle button.active {
+    background: var(--figma-color-bg-brand);
+    color: white;
+  }
+
+  .frame-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border: 1px dashed var(--figma-color-border);
+    border-radius: var(--radius-md);
+    color: var(--figma-color-text-secondary);
+    font-size: 11px;
+  }
+  .frame-selector.has-frame {
+    border-style: solid;
+    border-color: var(--figma-color-bg-brand);
+    color: var(--figma-color-text);
+  }
+  .frame-selector svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* === Color Picker === */
+  .color-row {
+    display: flex;
+    gap: 10px;
+  }
+  .color-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+  .color-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--figma-color-border);
+    cursor: pointer;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .color-swatch input[type="color"] {
+    width: 36px;
+    height: 36px;
+    border: none;
+    cursor: pointer;
+    margin: -6px;
+    padding: 0;
+  }
+  .color-hex {
+    width: 70px;
+  }
+
+  /* === Style Selector === */
+  .style-options {
+    display: flex;
+    gap: 6px;
+  }
+  .style-option {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--figma-color-border);
+    border-radius: var(--radius-md);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-family: inherit;
+    color: var(--figma-color-text-secondary);
+    transition: all var(--transition);
+  }
+  .style-option:hover { border-color: var(--figma-color-bg-brand); }
+  .style-option.active {
+    border-color: var(--figma-color-bg-brand);
+    background: var(--figma-color-bg-selected);
+    color: var(--figma-color-text-brand);
+    font-weight: 600;
+  }
+  .style-option svg { width: 20px; height: 20px; }
+
+  /* === Export Format === */
+  .format-options {
+    display: flex;
+    gap: 6px;
+  }
+  .format-option {
+    flex: 1;
+    padding: 6px;
+    border: 1px solid var(--figma-color-border);
+    border-radius: var(--radius-md);
+    background: transparent;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    font-family: inherit;
+    color: var(--figma-color-text-secondary);
+    transition: all var(--transition);
+  }
+  .format-option:hover { border-color: var(--figma-color-bg-brand); }
+  .format-option.active {
+    border-color: var(--figma-color-bg-brand);
+    background: var(--figma-color-bg-selected);
+    color: var(--figma-color-text-brand);
+  }
+
+  /* === Detail View === */
+  .detail-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .detail-info {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .detail-preview {
+    width: 260px;
+    border-left: 1px solid var(--figma-color-border);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    overflow-y: auto;
+  }
+
+  .detail-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .detail-field-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--figma-color-text-secondary);
+  }
+  .detail-field-value {
+    font-size: 12px;
+    color: var(--figma-color-text);
+  }
+
+  .detail-stats {
+    display: flex;
+    gap: 12px;
+  }
+  .stat-card {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--figma-color-border);
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--figma-color-text-brand);
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--figma-color-text-secondary);
+  }
+
+  /* === Utility === */
+  .hidden { display: none !important; }
+  .flex-1 { flex: 1; }
+  .text-center { text-align: center; }
+  .gap-4 { gap: 4px; }
+  .gap-8 { gap: 8px; }
+  .mt-4 { margin-top: 4px; }
+
+  /* === Menu/Dropdown === */
+  .menu-wrapper {
+    position: relative;
+  }
+  .menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: var(--figma-color-bg);
+    border: 1px solid var(--figma-color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    min-width: 120px;
+    z-index: 100;
+    padding: 4px;
+    display: none;
+  }
+  .menu.open { display: block; }
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: none;
+    background: none;
+    width: 100%;
+    font-size: 11px;
+    font-family: inherit;
+    color: var(--figma-color-text);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition);
+  }
+  .menu-item:hover { background: var(--figma-color-bg-hover); }
+  .menu-item.danger { color: var(--figma-color-text-danger); }
+  .menu-item svg { width: 12px; height: 12px; }
+  .menu-divider {
+    height: 1px;
+    background: var(--figma-color-border);
+    margin: 4px 0;
+  }
+
+  /* === Status Badge === */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .badge-active { background: rgba(20,174,92,0.1); color: var(--figma-color-text-success); }
+  .badge-inactive { background: rgba(153,153,153,0.1); color: var(--figma-color-text-secondary); }
+
+  /* === Toast === */
+  .toast {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: var(--figma-color-text);
+    color: var(--figma-color-bg);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    font-size: 11px;
+    font-weight: 500;
+    box-shadow: var(--shadow-md);
+    z-index: 200;
+    transition: transform 200ms ease;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* === Analytics View === */
+  .analytics-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--figma-color-border);
+    flex-shrink: 0;
+  }
+  .analytics-header select {
+    margin-left: auto;
+  }
+
+  .analytics-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .stat-box {
+    padding: 10px;
+    border: 1px solid var(--figma-color-border);
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+  .stat-box-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--figma-color-text-brand);
+  }
+  .stat-box-label {
+    font-size: 9px;
+    color: var(--figma-color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  .chart-section {
+    margin-bottom: 14px;
+  }
+  .chart-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--figma-color-text);
+    margin-bottom: 6px;
+  }
+  .chart-container {
+    border: 1px solid var(--figma-color-border);
+    border-radius: var(--radius-md);
+    padding: 10px;
+    background: var(--figma-color-bg);
+  }
+  .chart-canvas {
+    width: 100%;
+    height: 120px;
+  }
+
+  .chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* Bar list chart */
+  .bar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .bar-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+  }
+  .bar-item-label {
+    width: 80px;
+    text-align: right;
+    color: var(--figma-color-text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .bar-item-bar {
+    flex: 1;
+    height: 14px;
+    background: var(--figma-color-bg-secondary);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-item-fill {
+    height: 100%;
+    background: var(--figma-color-bg-brand);
+    border-radius: 3px;
+    min-width: 2px;
+  }
+  .bar-item-count {
+    width: 30px;
+    font-weight: 600;
+    color: var(--figma-color-text);
+    font-size: 10px;
+  }
+
+  /* Recent scans table */
+  .scan-table {
+    width: 100%;
+    font-size: 10px;
+    border-collapse: collapse;
+  }
+  .scan-table th {
+    text-align: left;
+    padding: 4px 6px;
+    color: var(--figma-color-text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-size: 9px;
+    border-bottom: 1px solid var(--figma-color-border);
+  }
+  .scan-table td {
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--figma-color-border);
+    color: var(--figma-color-text);
+  }
+  .scan-table tr:hover td {
+    background: var(--figma-color-bg-hover);
+  }
+
+  .analytics-empty {
+    text-align: center;
+    padding: 40px;
+    color: var(--figma-color-text-secondary);
+  }
+
+  .device-icon {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+
+  /* World map placeholder */
+  .world-map {
+    width: 100%;
+    height: 140px;
+    border: 1px solid var(--figma-color-border);
+    border-radius: var(--radius-md);
+    position: relative;
+    overflow: hidden;
+    background: var(--figma-color-bg-secondary);
+  }
+  .map-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--figma-color-bg-brand);
+    border-radius: 50%;
+    border: 1.5px solid var(--figma-color-bg);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 4px rgba(13, 153, 255, 0.4);
+  }
+  .map-dot-label {
+    position: absolute;
+    font-size: 8px;
+    color: var(--figma-color-text-secondary);
+    white-space: nowrap;
+    transform: translateX(-50%);
+    top: 10px;
+  }
+
+  /* === QR Modal === */
+  .qr-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .qr-modal-overlay.open { display: flex; }
+  .qr-modal {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-width: 340px;
+    cursor: default;
+  }
+  .qr-modal img {
+    width: 280px;
+    height: 280px;
+    object-fit: contain;
+  }
+  .qr-modal-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+  }
+  .qr-modal-url {
+    font-size: 10px;
+    color: #999;
+    word-break: break-all;
+    text-align: center;
+    max-width: 260px;
+  }
+  .qr-modal-hint {
+    font-size: 9px;
+    color: #bbb;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg>
+      QR Code Studio
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" id="btnAnalytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        Analytics
+      </button>
+      <button class="btn btn-primary" id="btnCreate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New QR Code
+      </button>
+    </div>
+  </div>
+
+  <!-- Dashboard View -->
+  <div class="view active" id="viewDashboard">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="input" type="text" placeholder="Search QR codes..." id="searchInput">
+      </div>
+      <select class="select" id="filterStatus">
+        <option value="all">All Status</option>
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
+      <select class="select" id="filterCategory">
+        <option value="all">All Types</option>
+      </select>
+      <select class="select" id="filterSort">
+        <option value="newest">Most Recent</option>
+        <option value="oldest">Oldest</option>
+        <option value="name">Name A-Z</option>
+        <option value="scans">Most Scans</option>
+      </select>
+      <select class="select quantity-select" id="filterQuantity">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+
+    <!-- Bulk Actions -->
+    <div class="bulk-bar" id="bulkBar">
+      <div class="checkbox checked" id="bulkCheckbox"></div>
+      <span><span class="count" id="bulkCount">0</span> selected</span>
+      <div class="flex-1"></div>
+      <button class="btn btn-sm btn-secondary" id="btnBulkExport">Export</button>
+      <button class="btn btn-sm btn-danger" id="btnBulkDelete">Delete</button>
+    </div>
+
+    <!-- List Header -->
+    <div class="list-header hidden" id="listHeader">
+      <div class="checkbox" id="selectAll" style="margin-right: 10px;"></div>
+      <span style="width: 42px; margin-right: 10px;">Preview</span>
+      <span style="flex: 1;">Name / URL</span>
+      <span style="min-width: 100px;">Folder</span>
+      <span style="min-width: 90px;">Modified</span>
+      <span style="min-width: 50px; text-align: center;">Scans</span>
+      <span style="min-width: 160px; text-align: right;">Actions</span>
+    </div>
+
+    <!-- QR Code List -->
+    <div class="list-container" id="listContainer"></div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zm4 0h3v3h-3zm-4 4h3v3h-3zm4 4h3v-3"/></svg>
+      <h3>No QR codes yet</h3>
+      <p>Create your first QR code to get started. Generate from a URL or a Figma frame.</p>
+      <button class="btn btn-primary" id="btnCreateEmpty">Create QR Code</button>
+    </div>
+  </div>
+
+  <!-- Create / Edit View -->
+  <div class="view" id="viewCreate">
+    <div class="tabs">
+      <button class="tab" id="tabBack">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;margin-right:4px;"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <div class="flex-1"></div>
+      <span id="createTitle" style="padding:8px 14px;font-weight:600;font-size:11px;">New QR Code</span>
+      <div class="flex-1"></div>
+    </div>
+    <div class="create-layout">
+      <div class="create-form">
+        <!-- Source -->
+        <div class="form-group">
+          <div class="form-label">Source</div>
+          <div class="source-toggle">
+            <button class="active" data-source="url" id="srcUrl">Content</button>
+            <button data-source="frame" id="srcFrame">Figma Frame</button>
+          </div>
+        </div>
+
+        <!-- Frame Selector (for Figma Frame source) -->
+        <div class="form-group hidden" id="frameGroup">
+          <div class="form-label">Selected Frame</div>
+          <div class="frame-selector" id="frameSelector">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+            <span id="frameName">Select a frame in Figma canvas</span>
+          </div>
+        </div>
+
+        <!-- Name & Category -->
+        <div class="form-row">
+          <div class="form-group">
+            <div class="form-label">Name</div>
+            <input class="input" type="text" placeholder="My QR Code" id="inputName">
+          </div>
+          <div class="form-group">
+            <div class="form-label">QR Type</div>
+            <select class="select" id="inputCategory" style="width:100%;">
+              <option value="Website">Website</option>
+              <option value="Social Media">Social Media</option>
+              <option value="Email">Email</option>
+              <option value="Phone">Phone Call</option>
+              <option value="SMS">SMS</option>
+              <option value="WiFi">WiFi Network</option>
+              <option value="vCard">Contact Card (vCard)</option>
+              <option value="Event">Calendar Event</option>
+              <option value="Geo Location">Geo Location</option>
+              <option value="Payment">Payment</option>
+              <option value="Product">Product</option>
+              <option value="Menu">Menu</option>
+              <option value="Other">Plain Text / Other</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Folder -->
+        <div class="form-group">
+          <div class="form-label">Folder</div>
+          <input class="input" type="text" placeholder="No folder" id="inputFolder">
+        </div>
+
+        <!-- Dynamic Fields based on QR Type -->
+        <div class="form-section-title" id="dynamicFieldsTitle">Website URL</div>
+        <div id="dynamicFields">
+          <div class="form-group">
+            <div class="form-label">URL *</div>
+            <input class="input" type="url" placeholder="example.com" id="f-url" style="width:100%;">
+          </div>
+        </div>
+
+        <!-- Hidden legacy field for backward compat -->
+        <input type="hidden" id="inputUrl" value="">
+
+        <!-- Customization -->
+        <div class="form-section-title">Customization</div>
+
+        <!-- Colors -->
+        <div class="color-row">
+          <div class="color-field">
+            <div class="form-label">Foreground</div>
+            <div class="color-input-wrap">
+              <div class="color-swatch">
+                <input type="color" value="#000000" id="colorFg">
+              </div>
+              <input class="input color-hex" type="text" value="#000000" id="colorFgHex">
+            </div>
+          </div>
+          <div class="color-field">
+            <div class="form-label">Background</div>
+            <div class="color-input-wrap">
+              <div class="color-swatch">
+                <input type="color" value="#FFFFFF" id="colorBg">
+              </div>
+              <input class="input color-hex" type="text" value="#FFFFFF" id="colorBgHex">
+            </div>
+          </div>
+        </div>
+
+        <!-- Style -->
+        <div class="form-group">
+          <div class="form-label">Module Style</div>
+          <div class="style-options">
+            <button class="style-option active" data-style="square">
+              <svg viewBox="0 0 20 20"><rect x="2" y="2" width="6" height="6" fill="currentColor"/><rect x="12" y="2" width="6" height="6" fill="currentColor"/><rect x="2" y="12" width="6" height="6" fill="currentColor"/><rect x="12" y="12" width="6" height="6" fill="currentColor"/></svg>
+              Square
+            </button>
+            <button class="style-option" data-style="rounded">
+              <svg viewBox="0 0 20 20"><rect x="2" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="12" y="2" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="2" y="12" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="12" y="12" width="6" height="6" rx="1.5" fill="currentColor"/></svg>
+              Rounded
+            </button>
+            <button class="style-option" data-style="dots">
+              <svg viewBox="0 0 20 20"><circle cx="5" cy="5" r="3" fill="currentColor"/><circle cx="15" cy="5" r="3" fill="currentColor"/><circle cx="5" cy="15" r="3" fill="currentColor"/><circle cx="15" cy="15" r="3" fill="currentColor"/></svg>
+              Dots
+            </button>
+          </div>
+        </div>
+
+        <!-- Error Correction & Size -->
+        <div class="form-row">
+          <div class="form-group">
+            <div class="form-label">Error Correction</div>
+            <select class="select" id="inputEC" style="width:100%;">
+              <option value="L">Low (7%)</option>
+              <option value="M" selected>Medium (15%)</option>
+              <option value="Q">Quartile (25%)</option>
+              <option value="H">High (30%)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Size (px)</div>
+            <input class="input" type="number" value="256" min="64" max="2048" id="inputSize" style="width:100%;">
+          </div>
+          <div class="form-group">
+            <div class="form-label">Margin</div>
+            <input class="input" type="number" value="4" min="0" max="20" id="inputMargin" style="width:100%;">
+          </div>
+        </div>
+
+        <!-- Export Format -->
+        <div class="form-group">
+          <div class="form-label">Export Format</div>
+          <div class="format-options">
+            <button class="format-option active" data-format="svg">SVG</button>
+            <button class="format-option" data-format="png">PNG</button>
+            <button class="format-option" data-format="embed">Embed Code</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview Panel -->
+      <div class="create-preview">
+        <div class="preview-qr" id="previewQr">
+          <div class="placeholder">Fill in the fields to generate preview</div>
+        </div>
+        <div id="encodedContent" style="font-size:9px;color:var(--figma-color-text-secondary);word-break:break-all;text-align:center;padding:0 8px;max-height:36px;overflow:hidden;line-height:1.3;"></div>
+        <div class="preview-actions">
+          <button class="btn btn-primary" id="btnPasteToFigma" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8m-4-4h8"/></svg>
+            Paste into Figma
+          </button>
+          <button class="btn btn-secondary" id="btnDownload" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </button>
+          <button class="btn btn-primary" id="btnSave" disabled>Save QR Code</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail View -->
+  <div class="view" id="viewDetail">
+    <div class="tabs">
+      <button class="tab" id="tabDetailBack">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;margin-right:4px;"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <div class="flex-1"></div>
+      <span id="detailTitle" style="padding:8px 14px;font-weight:600;font-size:11px;">QR Code Details</span>
+      <div class="flex-1"></div>
+      <button class="tab" id="tabDetailEdit">Edit</button>
+    </div>
+    <div class="detail-layout">
+      <div class="detail-info" id="detailInfo"></div>
+      <div class="detail-preview" id="detailPreview"></div>
+    </div>
+  </div>
+
+  <!-- Analytics View -->
+  <div class="view" id="viewAnalytics">
+    <div class="analytics-header">
+      <button class="tab" id="tabAnalyticsBack">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;margin-right:4px;"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <span style="font-weight:600;font-size:11px;">Analytics</span>
+      <select class="select" id="analyticsQrFilter">
+        <option value="all">All QR Codes</option>
+      </select>
+      <select class="select" id="analyticsDateRange">
+        <option value="7d">Last 7 days</option>
+        <option value="30d" selected>Last 30 days</option>
+        <option value="90d">Last 90 days</option>
+        <option value="all">All time</option>
+      </select>
+    </div>
+    <div class="analytics-scroll" id="analyticsContent">
+      <div class="analytics-empty">
+        <p>Loading analytics...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="qr-modal-overlay" id="qrModal">
+  <div class="qr-modal">
+    <img id="qrModalImg" src="" alt="QR Code">
+    <div class="qr-modal-name" id="qrModalName"></div>
+    <div class="qr-modal-url" id="qrModalUrl"></div>
+    <div class="qr-modal-hint">Click outside to close</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- SCRIPT_PLACEHOLDER -->
+</body>
+</html>

@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.netlify/
+backend/node_modules/
+backend/.netlify/
+.DS_Store
